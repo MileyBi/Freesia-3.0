@@ -1,0 +1,34 @@
+<RCC>
+    <qresource prefix="/prefix">
+        <file>resources/data/ABAv3_P56_Annotation_coronal_flip2.raw</file>
+        <file>resources/data/structures-190818-1.json</file>
+        <file>resources/icon/arrowdown.png</file>
+        <file>resources/icon/arrowright.png</file>
+        <file>resources/icon/buttonx.png</file>
+        <file>resources/icon/buttony.png</file>
+        <file>resources/icon/crop.png</file>
+        <file>resources/icon/export1.png</file>
+        <file>resources/icon/import1.png</file>
+        <file>resources/icon/open1.png</file>
+        <file>resources/icon/open2.png</file>
+        <file>resources/icon/rotate.png</file>
+        <file>resources/icon/save1.png</file>
+        <file>resources/data/freesia-atlas.json</file>
+        <file>resources/data/macaque-191111-RM006-mri-flipz.raw</file>
+        <file>resources/data/structures-191111-RM006-mri.json</file>
+        <file>resources/icon/3d.png</file>
+        <file>resources/icon/3d2.png</file>
+        <file>resources/icon/3d1.png</file>
+        <file>resources/icon/hide.png</file>
+        <file>resources/icon/show.png</file>
+        <file>resources/icon/celllabel2.png</file>
+        <file>resources/icon/celllabel1.png</file>
+        <file>resources/icon/rotate1.png</file>
+        <file>resources/icon/crop1.png</file>
+        <file>resources/icon/deformation.png</file>
+        <file>resources/icon/deformation1.png</file>
+        <file>resources/icon/axial1.png</file>
+        <file>resources/icon/coronal1.png</file>
+        <file>resources/icon/sagital1.png</file>
+    </qresource>
+</RCC>
