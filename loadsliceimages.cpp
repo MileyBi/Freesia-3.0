@@ -1,4 +1,4 @@
-#include "common.h"
+ #include "common.h"
 #include "loadsliceimages.h"
 #include "loadbrainatlases.h"
 #include "importexportdialog.h"
@@ -392,10 +392,20 @@ bool LoadSliceImages::loadJsonFile(QString path){
     foreach(QVariant v,info["images"].toList()){
         QVariantMap v1=v.toMap();Image *image=new Image;
         foreach(QVariant item,channelList){
-            QVariantMap v2=v1[item.toString()].toMap();
+            cv::Mat m;QVariantMap v2=v1[item.toString()].toMap();
             image->index=v2["index"].toInt();image->groupIndex=(image->index-1)/m_groupSize+1;
             image->size.append(QSize(v1["width"].toInt(),v1["height"].toInt()));
-            image->filePath.append(v2["file_name"].toString());
+            QString filePath=v2["file_name"].toString();image->filePath.append(filePath);
+
+            if(filePath.endsWith(".flsm")||filePath.endsWith(".tar")){loadTarBundle(filePath,m);}
+            else{m=cv::imread(filePath.toStdString(),-1);}
+            if(m.empty()){emit c->showMessage("Failed to load image "+filePath);return false;}
+            if(m.type()==CV_8UC3){cv::cvtColor(m,m,CV_BGR2GRAY);}
+            else if(m.type()==CV_8UC4){cv::cvtColor(m,m,CV_BGRA2GRAY);}
+            if(m.type()==CV_8UC1){m.convertTo(m,CV_16UC1,4);}
+            if(m.type()!=CV_16UC1){continue;}
+            flip(m,m,0);cv::Size size=m.size();image->data.append(m);
+            image->size.append(QSize(size.width,size.height));
         }
         m_images.append(image);
     }
@@ -422,7 +432,7 @@ bool LoadSliceImages::loadJsonFile(QString path){
         }
         w->importAllMarkers(params["warp_markers"].toList());
     }
-//    loadImages();return true;
+    loadImages();return true;
 }
 
 bool LoadSliceImages::loadVisorFile(QString path){
@@ -687,7 +697,7 @@ void LoadSliceImages::exportCellCounting(){
         cv::Mat modelImage=cv::Mat(cv::Size(w,h),CV_16UC1,pDataModel).clone();
 
         foreach(Point *p,image->spots){
-            double px=p->p1[0],py=pSizeImage[1]-1-p->p1[1];
+            double px=p->p1[0],py=p->p1[1];
             if(bWarpValid){
                 int x1=round(px),y1=round(py);if(x1<0||x1>=w1||y1<0||y1>=h1){continue;}
                 float *pOffset=(float*)warpField.data+(y1*w1+x1)*2;px=pOffset[0];py=pOffset[1];
@@ -699,6 +709,7 @@ void LoadSliceImages::exportCellCounting(){
             int x=round((p2[0]-originModel[0])/spacingModel[0]),y=round((p2[1]-originModel[1])/spacingModel[1]);
             if(x>=0&&x<w&&y>=0&&y<h){colorCounts[*(y*w+x+pDataModel)]++;modelImage.at<ushort>(y,x)=1000;}
         }
+
         QVariantList regions;
         for(int i=0;i<=65535;i++){
             size_t count=colorCounts[i];if(0==count){continue;}
@@ -712,3 +723,5 @@ void LoadSliceImages::exportCellCounting(){
     }
     emit mergeCellCounting(path);
 }
+
+
